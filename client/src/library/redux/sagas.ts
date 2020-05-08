@@ -2,6 +2,7 @@ import { all, takeLatest, call, put, select } from 'redux-saga/effects';
 import * as actions from './actions';
 import {deleteBookApi, getBookInfoById, getBookList, updateBook} from "../../api";
 import {getCurrentBookId, getCurrentBookInfo} from "./selectors";
+import {message} from "antd";
 
 function* getList() {
   try {
@@ -25,10 +26,12 @@ function* updateBookInfo() {
     const currentBookInfo = yield select(getCurrentBookInfo);
     const currentBookId = yield select(getCurrentBookId);
     yield call(updateBook, currentBookId, currentBookInfo);
+    message.success('Изменения сохранены!');
     yield put(actions.saveChanges.done({ params: null, result: true }))
   }
   catch (error) {
     console.error(error);
+    message.error('Сохранение зафейлилось');
     yield put(actions.saveChanges.failed({ error, params: null }));
   }
 }

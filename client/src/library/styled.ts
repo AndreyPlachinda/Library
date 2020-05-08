@@ -35,7 +35,7 @@ export const TitleStyled = styled.div`
 export const DescriptionsStyled = styled(Descriptions)`
   tbody {
     tr > td {
-      width: 1250px;
+      width: 800px;
     }
   }
 `;
@@ -59,10 +59,11 @@ export const StatusBlockStyled = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 700px;
 `;
 
 export const ActiveButtonStyled = styled(Button)`
-  width: 150px;
+  width: 220px;
 `;
 
 export const ModalBodyLabelStyled = styled.div`

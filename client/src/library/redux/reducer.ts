@@ -10,6 +10,7 @@ export interface ILibraryReducerShape {
   isSaving: boolean;
   currentBookInfo: ListType | null;
   initialize: boolean;
+  visibleDrawer: boolean;
 }
 
 const initialState: ILibraryReducerShape = {
@@ -19,6 +20,7 @@ const initialState: ILibraryReducerShape = {
   isSaving: false,
   currentBookInfo: null,
   initialize: true,
+  visibleDrawer: false,
 };
 
 export default reducerWithInitialState<ILibraryReducerShape>(initialState)
@@ -35,6 +37,7 @@ export default reducerWithInitialState<ILibraryReducerShape>(initialState)
             currentBookId: payload,
             currentBookInfo: state.list.find(item => item.id === payload) || null,
             isEditMode: initialState.isEditMode,
+            visibleDrawer: true,
         })
     )
     .case(
@@ -50,11 +53,23 @@ export default reducerWithInitialState<ILibraryReducerShape>(initialState)
             currentBookInfo: payload,
         })
     )
-    .cases(
-        [actions.saveChanges.done, actions.saveChanges.failed], state => ({
+    .case(
+        actions.saveChanges.done, state => ({
             ...state,
             isSaving: initialState.isSaving,
             isEditMode: !state.isEditMode,
+            visibleDrawer: false,
+            list: state.list.map(
+                item => (state.currentBookId && item.id === state.currentBookId && state.currentBookInfo) || item
+            )
+        })
+    )
+    .case(
+        actions.saveChanges.failed, state => ({
+            ...state,
+            isSaving: initialState.isSaving,
+            isEditMode: !state.isEditMode,
+            visibleDrawer: false,
         })
     )
     .case(actions.changeStatusBook, (state, payload) => ({
@@ -70,6 +85,7 @@ export default reducerWithInitialState<ILibraryReducerShape>(initialState)
         ...state,
         currentBookInfo: state.list.find(item => item.id === state.currentBookId) || null,
         isEditMode: false,
+        visibleDrawer: false
     }))
     .case(actions.deleteBook, (state, payload) => ({
         ...state,

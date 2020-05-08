@@ -14,9 +14,6 @@ export const StatusComponent: React.FC<
   returnDate: string
 }> = ({ inStock, reader, returnDate }) => {
     const dispatch = useDispatch();
-    const isEditMode = useSelector<RootState, boolean>(
-        state => state.library.isEditMode
-    );
     const [visible, setVisible] = React.useState(false);
     const [inputReader, setInputReader] = React.useState('');
     const [inputReturnDate, setInputReturnDate] = React.useState('');
@@ -52,16 +49,14 @@ export const StatusComponent: React.FC<
         setInputReturnDateMoment(date);
     }, []);
 
-    const ActiveButton = isEditMode ?
-        inStock
-            ? <ActiveButtonStyled type="primary" onClick={onClickTakeButton}>Take a book</ActiveButtonStyled>
-            : <ActiveButtonStyled
-                type="primary"
-                onClick={onClickReturnBookBut}
-            >
-                Return to the library
-            </ActiveButtonStyled>
-    : null;
+    const ActiveButton = inStock
+        ? <ActiveButtonStyled type="primary" onClick={onClickTakeButton}>Взять книгу</ActiveButtonStyled>
+        : <ActiveButtonStyled
+            type="primary"
+            onClick={onClickReturnBookBut}
+        >
+            Вернуть книгу в библиотеку
+        </ActiveButtonStyled>;
 
     return (
         <StatusBlockStyled>
@@ -77,17 +72,17 @@ export const StatusComponent: React.FC<
             }
             {ActiveButton}
             <Modal
-                title='Take a book'
+                title='Взять книгу на чтение'
                 visible={visible}
                 onOk={onOk}
                 onCancel={onCancel}
             >
                 <ModalBodyLabelStyled>
-                    <div>Reader:</div>
+                    <div>Читатель:</div>
                     <Input style={inputStyles} value={inputReader} onChange={onChangeInputReader} />
                 </ModalBodyLabelStyled>
                 <ModalBodyLabelStyled>
-                    <div>Return date:</div>
+                    <div>Дата возврата:</div>
                     <DatePicker value={inputReturnDateMoment} style={inputStyles} onChange={onChangeDatePicker} />
                 </ModalBodyLabelStyled>
             </Modal>

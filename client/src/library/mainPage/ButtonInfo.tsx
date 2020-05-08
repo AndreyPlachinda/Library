@@ -1,12 +1,11 @@
 import React from "react";
-import { Tooltip } from "antd";
-import {Link} from "react-router-dom";
+import {Button, Tooltip} from "antd";
 import {ListType} from "../types";
-import { InfoCircleFilled } from '@ant-design/icons'
 import {ActionsBlockButton} from "../styled";
 import {MinusCircleFilled} from "@ant-design/icons/lib";
 import {deleteBook, userClickedOnTheDetailsButton} from "../redux/actions";
 import {useDispatch} from "react-redux";
+import {DetailsInfoComponent} from "../bookDetails";
 
 export const ButtonInfo: React.FC<{ item: ListType }> = ({ item }) => {
     const dispatch= useDispatch();
@@ -14,27 +13,28 @@ export const ButtonInfo: React.FC<{ item: ListType }> = ({ item }) => {
         () => dispatch(deleteBook(item.id)),
         [dispatch, item.id]
     );
+    const [visible, setVisible] = React.useState(false);
 
     const onClickDetailButton = React.useCallback(
         () => {
+            setVisible(true);
             localStorage.setItem('bookId', String(item.id));
             dispatch(userClickedOnTheDetailsButton(item.id));
         },
         [dispatch, item.id]
     );
-    
+
+    const changeVisible = React.useCallback(() => setVisible(false), []);
+
     return (
-        <ActionsBlockButton>
-            <Link to={{ pathname: `/book/${item.id}`}}>
-                <Tooltip title="Detailed information">
-                    <InfoCircleFilled onClick={onClickDetailButton} />
-                </Tooltip>
-            </Link>
-            <Link to={{ pathname: `/` }}>
-                <Tooltip title="Delete book">
-                    <MinusCircleFilled style={{ marginLeft: '16px' }} onClick={onClickRemoveButton} />
-                </Tooltip>
-            </Link>
-        </ActionsBlockButton>
+        <>
+            <ActionsBlockButton>
+                <Button type='primary' onClick={onClickDetailButton}>Детальная информация</Button>
+                <Button type='primary' style={{ marginLeft: '16px' }} onClick={onClickRemoveButton}>
+                    Удалить книгу
+                </Button>
+            </ActionsBlockButton>
+            <DetailsInfoComponent visible={visible} changeVisible={changeVisible} />
+            </>
     )
 };

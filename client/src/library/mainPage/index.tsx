@@ -18,7 +18,7 @@ export const MainInfoComponent: React.FC = () => {
 
     return (
         <s.WrapperComponentStyled>
-            <s.TitleStyled>Welcome to the online library</s.TitleStyled>
+            <s.TitleStyled>Онлайн библиотека</s.TitleStyled>
             <Table
                 style={tableStyles}
                 dataSource={bookList}

@@ -4,31 +4,25 @@ import {ButtonInfo} from "./ButtonInfo";
 
 export const columns = [
     {
-        title: 'Title of the book',
+        title: 'Название книги',
         dataIndex: 'item',
         key: 'name',
         render: (_record: any, item: ListType) => <div key={item.id}>{item.name}</div>,
     },
     {
-        title: 'Author',
+        title: 'Автор',
         dataIndex: 'item',
         key: 'author',
         render: (_record: any, item: ListType) => <div key={item.id}>{item.author}</div>,
     },
     {
-        title: 'The year of publishing',
+        title: 'Год издательства',
         dataIndex: 'item',
         key: 'yearPub',
         render: (_record: any, item: ListType) => <div key={item.id}>{item.yearOfPublishing}</div>,
     },
     {
-        title: 'Language',
-        dataIndex: 'item',
-        key: 'language',
-        render: (_record: any, item: ListType) => <div key={item.id}>{item.language}</div>,
-    },
-    {
-        title: 'Action',
+        title: '',
         dataIndex: 'item',
         key: 'action',
         render: (_record: any, item: ListType) => <ButtonInfo item={item} />,

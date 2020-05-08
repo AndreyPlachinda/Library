@@ -3,17 +3,16 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../redux";
 import {ListType} from "../types";
 import * as s from '../styled';
-import {Descriptions, Tooltip} from "antd";
-import {cancelChanges, changeIsEditMode, getBookInfoInitialize, saveChanges} from "../redux/actions";
+import {Button, Descriptions, Drawer} from "antd";
+import {cancelChanges, getBookInfoInitialize, saveChanges} from "../redux/actions";
 import {ItemComponent} from "./descriptionsItem";
-import { HomeFilled } from '@ant-design/icons';
-import {Link} from "react-router-dom";
 import {StatusComponent} from "./statusComponent";
 
 const buttonStyles: React.CSSProperties = { marginLeft: '16px' };
-const homeIconStyles: React.CSSProperties = { fontSize: '24px', marginTop: '16px' };
 
-export const DetailsInfoComponent: React.FC = () => {
+export const DetailsInfoComponent: React.FC<{ visible: boolean; changeVisible: () => void }> = (
+    { visible, changeVisible }
+    ) => {
     const dispatch = useDispatch();
 
     const initialize = useSelector<RootState, boolean>(
@@ -27,9 +26,6 @@ export const DetailsInfoComponent: React.FC = () => {
 
     const currentBookInfo = useSelector<RootState, ListType | any>(
         state => state.library.currentBookInfo || {}
-    );
-    const isEditMode = useSelector<RootState, boolean>(
-        state => state.library.isEditMode
     );
     const isSaving = useSelector<RootState, boolean>(
         state => state.library.isSaving
@@ -46,23 +42,18 @@ export const DetailsInfoComponent: React.FC = () => {
 
     const onClick = React.useCallback(
         () => {
-            if (!isEditMode) {
-                dispatch(changeIsEditMode(true));
-            } else {
-                const bookInfo: ListType = {
-                    ...currentBookInfo,
-                    name: inputTitle,
-                    author: inputAuthor,
-                    yearOfPublishing: inputYearOfPublishing
-                };
-                dispatch(saveChanges.started(bookInfo))
-            }
+            const bookInfo: ListType = {
+                ...currentBookInfo,
+                name: inputTitle,
+                author: inputAuthor,
+                yearOfPublishing: inputYearOfPublishing
+            };
+            dispatch(saveChanges.started(bookInfo));
+            changeVisible();
         },
-        [currentBookInfo, dispatch, inputAuthor, inputTitle, inputYearOfPublishing, isEditMode]
+        [changeVisible, currentBookInfo, dispatch, inputAuthor, inputTitle, inputYearOfPublishing]
     );
-
-    const onClickHomeButton = React.useCallback(() => dispatch(changeIsEditMode(false)), [dispatch]);
-
+    
     React.useEffect(() => {
         setInputTitle(name);
     }, [name]);
@@ -93,56 +84,60 @@ export const DetailsInfoComponent: React.FC = () => {
             setInputAuthor(author);
             setInputYearOfPublishing(yearOfPublishing);
             dispatch(cancelChanges());
+            changeVisible();
         },
-        [author, dispatch, name, yearOfPublishing]
+        [author, changeVisible, dispatch, name, yearOfPublishing]
     );
     
     return (
-        <s.BookWrapperComponentStyled>
-            <s.BlockInfoStyled>
-                <s.TitleStyled>Book Info</s.TitleStyled>
-                <s.DescriptionsStyled title="" bordered column={1}>
-                    <Descriptions.Item label="Title of the book	">
-                        <ItemComponent item={inputTitle} onChange={onChangeInputTitle} />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Author">
-                        <ItemComponent item={inputAuthor} onChange={onChangeInputAuthor} />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="The year of publishing">
-                        <ItemComponent item={inputYearOfPublishing} onChange={onChangeYearOfPublishing} />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Language">{currentBookInfo.language}</Descriptions.Item>
-                    <Descriptions.Item label="Number of pages">{currentBookInfo.numberOfPages}</Descriptions.Item>
-                    <Descriptions.Item label="Status">
-                        <StatusComponent
-                            inStock={currentBookInfo.inStock}
-                            reader={currentBookInfo.reader}
-                            returnDate={currentBookInfo.returnDate}
-                        />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Description">
-                        {currentBookInfo.description || 'No description'}
-                    </Descriptions.Item>
-                </s.DescriptionsStyled>
-                <s.ButtonBlockStyled>
-                    <s.ButtonStyled onClick={onClickCancelButton}>Cancel</s.ButtonStyled>
+        <Drawer
+            title="Информация о книге"
+            placement="right"
+            closable={false}
+            visible={visible}
+            width={1000}
+            footer={
+                <div style={{ textAlign: 'right' }}>
+                    <Button style={{ marginRight: 8 }} onClick={onClickCancelButton}>
+                        Cancel
+                    </Button>
                     <s.ButtonStyled
                         type="primary"
                         style={buttonStyles}
                         onClick={onClick}
                         loading={isSaving}
                     >
-                        {isEditMode ? 'Save' : 'Edit' }
+                        Save
                     </s.ButtonStyled>
-                </s.ButtonBlockStyled>
-            </s.BlockInfoStyled>
-           <s.ControlPanelStyled>
-               <Tooltip title="Homepage">
-                   <Link to={{ pathname: '/'}}>
-                       <HomeFilled style={homeIconStyles} onClick={onClickHomeButton} />
-                   </Link>
-               </Tooltip>
-           </s.ControlPanelStyled>
-        </s.BookWrapperComponentStyled>
+                </div>
+            }
+        >
+            <s.BookWrapperComponentStyled>
+                <s.BlockInfoStyled>
+                    <s.DescriptionsStyled title="" column={1}>
+                        <Descriptions.Item label="Название книги">
+                            <ItemComponent item={inputTitle} onChange={onChangeInputTitle} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Автор">
+                            <ItemComponent item={inputAuthor} onChange={onChangeInputAuthor} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Год издания">
+                            <ItemComponent item={inputYearOfPublishing} onChange={onChangeYearOfPublishing} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Количество страниц">{currentBookInfo.numberOfPages}</Descriptions.Item>
+                        <Descriptions.Item label="Статус книги">
+                            <StatusComponent
+                                inStock={currentBookInfo.inStock}
+                                reader={currentBookInfo.reader}
+                                returnDate={currentBookInfo.returnDate}
+                            />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Описание">
+                            {currentBookInfo.description || 'Нет информации'}
+                        </Descriptions.Item>
+                    </s.DescriptionsStyled>
+                </s.BlockInfoStyled>
+            </s.BookWrapperComponentStyled>
+        </Drawer>
     );
 };
