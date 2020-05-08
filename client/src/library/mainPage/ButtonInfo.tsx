@@ -1,8 +1,7 @@
 import React from "react";
-import {Button, Tooltip} from "antd";
+import {Button} from "antd";
 import {ListType} from "../types";
 import {ActionsBlockButton} from "../styled";
-import {MinusCircleFilled} from "@ant-design/icons/lib";
 import {deleteBook, userClickedOnTheDetailsButton} from "../redux/actions";
 import {useDispatch} from "react-redux";
 import {DetailsInfoComponent} from "../bookDetails";
